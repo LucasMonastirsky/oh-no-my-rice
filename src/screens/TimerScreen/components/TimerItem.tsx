@@ -1,6 +1,6 @@
 import { Text, StyleSheet } from 'react-native'
-import { HorizontalView, Spacer } from '../../../components'
-import { fontSizeMedium, marginMedium } from '../../../constants/styles'
+import { HorizontalView, Spacer } from '@src/components'
+import { fontSizeMedium, marginMedium } from '@src/constants/styles'
 
 const TimerItem = () => (
   <HorizontalView style={css.container}>
