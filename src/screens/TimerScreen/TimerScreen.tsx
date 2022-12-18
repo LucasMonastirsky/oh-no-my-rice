@@ -19,12 +19,14 @@ const TimerScreen = () => {
     setAdding(false)
   }
 
-  const onPressRemove = () => { console.log('wow') }
+  const removeTimer = (name: string) => {
+    setTimers(list => list.filter(x => x.name !== name))
+  }
   const onPressAdd = () => { setAdding(true) }
 
   return (
     <View style={css.container}>
-      {timers.map(x => <TimerItem timer={x} {...{onPressRemove}} />)}
+      {timers.map(x => <TimerItem timer={x} onPressRemove={removeTimer} />)}
       <FloatingButton onPress={onPressAdd} />
       <AddTimer active={adding} {...{addTimer}} onCancel={() => setAdding(false)} />
     </View>

@@ -6,7 +6,7 @@ type IconProps = { onPress?: () => any, color?: string }
 
 const Icon = ({ onPress, color }: IconProps) => {
   return <View style={css.container}>
-    <TouchableOpacity style={[css.background, { backgroundColor: color || textMain }]} onPress={onPress} />  
+    <TouchableOpacity style={[css.background, { backgroundColor: color || textMain }]} onPress={onPress} /> 
   </View>
 }
 

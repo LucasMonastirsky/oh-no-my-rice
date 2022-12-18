@@ -1,13 +1,20 @@
 import { HorizontalView, Spacer } from '@src/components'
 import AppButton from '@src/components/AppButton'
 import { Timer } from '@src/types'
-import { useState } from 'react'
-import { StyleSheet, Text, TextInput, View } from 'react-native'
+import { useEffect, useState } from 'react'
+import { BackHandler, StyleSheet, Text, TextInput, View } from 'react-native'
 import { Overlay } from 'react-native-elements'
 
 type AddTimerProps = { active: boolean, addTimer: (timer: Timer) => any, onCancel: () => any }
 export default ({ active, addTimer, onCancel }: AddTimerProps) => {
   const [name, setName] = useState('')
+
+  useEffect(() => {
+    BackHandler.addEventListener('hardwareBackPress', () => {
+      onCancel()
+      return false
+    })
+  }, [])
 
   const onConfirm = () => {
     if (name.length < 1) {

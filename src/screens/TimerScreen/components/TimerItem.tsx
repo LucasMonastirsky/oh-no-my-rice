@@ -1,12 +1,12 @@
 import { StyleSheet } from 'react-native'
 import { AppText, HorizontalView, Spacer } from '@src/components'
-import Icon from '@src/components/Icon'
+import Icon from '@src/components/AppIcon'
 import { useEffect, useReducer, useState } from 'react'
 import { timeToString } from '@src/utils/helpers'
 import { Timer } from '@src/types'
 
 type TimerStatus = 'active' | 'paused' | 'done'
-type TimerProps = { timer: Timer, onPressRemove: () => any } 
+type TimerProps = { timer: Timer, onPressRemove: (name: string) => any } 
 
 const TimerItem = ({ timer: { name, duration }, onPressRemove }: TimerProps) => {
   const [end_time, setEndTime] = useState<number>()
@@ -42,10 +42,10 @@ const TimerItem = ({ timer: { name, duration }, onPressRemove }: TimerProps) => 
       <AppText>{name}</AppText>
       <Spacer />
       <AppText>{timeToString(remaining_time)}</AppText>
-      <Icon onPress={onPressReset} color='red' />
+      <Icon onPress={onPressReset} color='blue' />
       {status === 'active' && <Icon onPress={onPressPause} color='yellow' />}
       {status === 'paused' && <Icon onPress={onPressStart} color='green' />}
-      {status === 'done' && <Icon onPress={onPressRemove} color='red' />}
+      {status === 'done' && <Icon onPress={() => onPressRemove(name)} color='red' />}
     </HorizontalView>
   )
 }
