@@ -2,16 +2,18 @@ import { StyleSheet } from 'react-native'
 import { AppText, HorizontalView, Spacer } from '@src/components'
 import Icon from '@src/components/Icon'
 import { useEffect, useReducer, useState } from 'react'
-import { timeToString, useAsyncState } from '@src/utils/helpers'
+import { timeToString } from '@src/utils/helpers'
 
-type TimerProps = { duration: number } 
+type TimerStatus = 'active' | 'paused' | 'done'
+type TimerProps = { duration: number, onPressRemove: () => any } 
 
-const TimerItem = ({ duration }: TimerProps) => {
-  const [end_time, setEndTime, getEndTime] = useAsyncState<number | null>(null)
+const TimerItem = ({ duration, onPressRemove }: TimerProps) => {
+  const [end_time, setEndTime] = useState<number>()
   const [elapsed_time, setElapsedTime] = useState(0)
   const [, tick] = useReducer(x => ++x, 0)
 
-  const getIsActive = () => getEndTime() != null 
+  const status: TimerStatus =
+    end_time === undefined ? 'paused' : end_time > Date.now() ? 'active' : 'done'
 
   useEffect(() => {
     const interval = setInterval(tick, 1000)
@@ -24,21 +26,25 @@ const TimerItem = ({ duration }: TimerProps) => {
   }
   const onPressPause = () => {
     setElapsedTime(duration - (end_time! - Date.now()))
-    setEndTime(null)
+    setEndTime(undefined)
   }
 
-  const remaining_time = end_time ? end_time - Date.now() : duration - elapsed_time
+  const onPressReset = () => {
+    setEndTime(undefined)
+    setElapsedTime(0)
+  }
+
+  const remaining_time = status === 'done' ? 0 : end_time ? end_time - Date.now() : duration - elapsed_time
 
   return (
     <HorizontalView style={css.container}>
       <AppText>Timer Name</AppText>
       <Spacer />
       <AppText>{timeToString(remaining_time)}</AppText>
-      <Icon onPress={tick} color='yellow' />
-      {getIsActive()
-        ? <Icon onPress={onPressPause} color='red' />
-        : <Icon onPress={onPressStart} color='green' />
-      }
+      <Icon onPress={onPressReset} color='red' />
+      {status === 'active' && <Icon onPress={onPressPause} color='yellow' />}
+      {status === 'paused' && <Icon onPress={onPressStart} color='green' />}
+      {status === 'done' && <Icon onPress={onPressRemove} color='red' />}
     </HorizontalView>
   )
 }
