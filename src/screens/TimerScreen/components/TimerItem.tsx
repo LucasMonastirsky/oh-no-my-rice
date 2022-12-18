@@ -3,11 +3,12 @@ import { AppText, HorizontalView, Spacer } from '@src/components'
 import Icon from '@src/components/Icon'
 import { useEffect, useReducer, useState } from 'react'
 import { timeToString } from '@src/utils/helpers'
+import { Timer } from '@src/types'
 
 type TimerStatus = 'active' | 'paused' | 'done'
-type TimerProps = { duration: number, onPressRemove: () => any } 
+type TimerProps = { timer: Timer, onPressRemove: () => any } 
 
-const TimerItem = ({ duration, onPressRemove }: TimerProps) => {
+const TimerItem = ({ timer: { name, duration }, onPressRemove }: TimerProps) => {
   const [end_time, setEndTime] = useState<number>()
   const [elapsed_time, setElapsedTime] = useState(0)
   const [, tick] = useReducer(x => ++x, 0)
@@ -38,7 +39,7 @@ const TimerItem = ({ duration, onPressRemove }: TimerProps) => {
 
   return (
     <HorizontalView style={css.container}>
-      <AppText>Timer Name</AppText>
+      <AppText>{name}</AppText>
       <Spacer />
       <AppText>{timeToString(remaining_time)}</AppText>
       <Icon onPress={onPressReset} color='red' />

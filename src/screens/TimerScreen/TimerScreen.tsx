@@ -1,19 +1,32 @@
-import AddButton from '@src/components/AddButton'
+import FloatingButton from '@src/components/FloatingButton'
+import { Timer } from '@src/types'
+import { useState } from 'react'
 import { StyleSheet, View } from 'react-native'
-import { TimerItem } from './components'
+import { AddTimer, TimerItem } from './components'
+
+const mockInitialTimers: Timer[] = [
+  { name: 'Potatoes', duration: 3600000 },
+  { name: 'Spinach', duration: 60000 },
+  { name: 'ur ex', duration: 2000 },
+]
 
 const TimerScreen = () => {
+  const [adding, setAdding] = useState(false)
+  const [timers, setTimers] = useState(mockInitialTimers)
+
+  const addTimer = (timer: Timer) => {
+    setTimers(x => [...x, {...timer, duration: 10000}])
+    setAdding(false)
+  }
+
   const onPressRemove = () => { console.log('wow') }
-  const onPressAdd = () => { console.log('no way!') }
+  const onPressAdd = () => { setAdding(true) }
 
   return (
     <View style={css.container}>
-      <TimerItem duration={3600000} {...{onPressRemove}} />
-      <TimerItem duration={7200000} {...{onPressRemove}} />
-      <TimerItem duration={600000} {...{onPressRemove}} />
-      <TimerItem duration={60000} {...{onPressRemove}} />
-      <TimerItem duration={3000} {...{onPressRemove}} />
-      <AddButton onPress={onPressAdd} />
+      {timers.map(x => <TimerItem timer={x} {...{onPressRemove}} />)}
+      <FloatingButton onPress={onPressAdd} />
+      <AddTimer active={adding} {...{addTimer}} onCancel={() => setAdding(false)} />
     </View>
   )
 }

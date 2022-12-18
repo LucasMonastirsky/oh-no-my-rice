@@ -1,8 +1,8 @@
 import { marginMedium } from "@src/constants/styles"
 import { StyleSheet, TouchableOpacity, View } from "react-native"
 
-type AddButtonProps = { onPress: () => any }
-const AddButton = ({ onPress }: AddButtonProps) => (
+type FloatingButtonProps = { onPress: () => any }
+const FloatingButton = ({ onPress }: FloatingButtonProps) => (
   <View style={css.container}>
     <TouchableOpacity style={css.button} {...{onPress}} />
   </View>
@@ -25,4 +25,4 @@ const css = StyleSheet.create({
   },
 })
 
-export default AddButton
+export default FloatingButton
