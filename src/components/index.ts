@@ -1,4 +1,5 @@
+import AppText from './AppText'
 import HorizontalView from './HorizontalView'
 import Spacer from './Spacer'
 
-export { HorizontalView, Spacer }
+export { AppText, HorizontalView, Spacer }
