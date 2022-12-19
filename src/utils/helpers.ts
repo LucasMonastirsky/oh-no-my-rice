@@ -1,5 +1,7 @@
 import { useRef, useState } from "react"
 
+export const addLeadingZero = (x: number) => x > 9 ? `${x}` : `0${x}`
+
 export const timeToString = (time: number) => {
   const total_seconds = Math.floor(time / 1000)
   const hours = Math.floor(total_seconds / 3600)
@@ -7,11 +9,9 @@ export const timeToString = (time: number) => {
   const seconds = Math.ceil(total_seconds % 60)
 
   const f = addLeadingZero
-  
+
   return `${f(hours)}:${f(minutes)}:${f(seconds)}`
 }
-
-export const addLeadingZero = (x: number) => x > 9 ? `${x}` : `0${x}`
 
 type ReturnType<T> = [T, (value: T | ((prev: T)=>T))=>void, ()=>T]
 export function useAsyncState<Type>(initial_value: Type): ReturnType<Type> {
