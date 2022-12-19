@@ -1,5 +1,6 @@
 import { HorizontalView, Spacer } from '@src/components'
 import AppButton from '@src/components/AppButton'
+import DurationPicker from '@src/components/DurationPicker/DurationPicker'
 import { Timer } from '@src/types'
 import { useEffect, useState } from 'react'
 import { BackHandler, StyleSheet, Text, TextInput, View } from 'react-native'
@@ -32,6 +33,7 @@ export default ({ active, addTimer, onCancel }: AddTimerProps) => {
         autoFocus
         placeholder="Timer Name"
       />
+      <DurationPicker />
       <HorizontalView>
         <Spacer />
         <AppButton title="Create" onPress={onConfirm} />
