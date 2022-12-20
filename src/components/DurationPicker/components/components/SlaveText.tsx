@@ -1,14 +1,11 @@
-import { View, TextStyle, Text } from "react-native"
+import { TextStyle } from "react-native"
 import { AppText } from '@src/components'
 
-type SlaveTextProps = { children: string, offset: number, debug?: string }
-const SlaveText = ({ children, offset, debug }: SlaveTextProps) => {
-  const style: TextStyle = { position: 'absolute', top: offset + '%', opacity: 0.5 }
+type SlaveTextProps = { children: string, offset: number, opacity: number, debug?: string }
+const SlaveText = ({ children, offset, opacity }: SlaveTextProps) => {
+  const style: TextStyle = { position: 'absolute', top: offset + '%', opacity }
 
-  return <>
-    <AppText {...{style}}>{children}</AppText>
-    <Text style={{position: 'absolute', top: offset + '%', left: '75%'}}>{debug}</Text>
-  </>
+  return <AppText {...{style}}>{children}</AppText>
 }
 
 export default SlaveText

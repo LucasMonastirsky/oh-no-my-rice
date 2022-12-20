@@ -4,10 +4,10 @@ import NumberPicker from "./components/NumberPicker"
 const DurationPicker = () => {
   return (
     <HorizontalView>
-      <NumberPicker />
+      {/* <NumberPicker max={24} />
       <HorizontalDivider />
       <NumberPicker />
-      <HorizontalDivider />
+      <HorizontalDivider /> */}
       <NumberPicker />
     </HorizontalView>
   )

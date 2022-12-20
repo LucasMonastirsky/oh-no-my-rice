@@ -1,5 +1,7 @@
 import { useRef, useState } from "react"
 
+export const limit = (x: number, min: number, max: number) => x < min ? min : x > max ? max : x
+
 export const addLeadingZero = (x: number) => x > 9 ? `${x}` : `0${x}`
 
 export const timeToString = (time: number) => {
