@@ -1,26 +1,25 @@
 import { useEffect, useState } from "react"
-import { GestureResponderEvent, View, ViewProps } from "react-native"
+import { View, ViewProps, ViewStyle } from "react-native"
 import { AppText } from '@src/components'
-import { addLeadingZero, limit, useAsyncState } from "@src/utils/helpers"
+import { limit, useAsyncState } from "@src/utils/helpers"
 import { SlaveText } from './components'
-import DEBUG from '@src/utils/debug'
 
 const refresh_interval = 32
 const deceleration = 1 / 1000
 
+type TouchEvent = { y: number, date: number }
 type TouchStatus = 'inactive' | 'active' | 'release'
-type NumberPickerProps = { initial_value?: number, max?: number }
-const NumberPicker = ({ initial_value, max = 60 }: NumberPickerProps) => {
-  const [pos, setPos] = useState(initial_value ?? 0)
-
-  const [touch_status, setTouchStatus, getTouchStatus] = useAsyncState<TouchStatus>('inactive')
+type NumberPickerProps = { initial_value?: number, onValueSettled?: (value: number) => any, max?: number }
+const NumberPicker = ({ initial_value, onValueSettled, max = 60 }: NumberPickerProps) => {
   const [view_height, setViewHeight] = useState(0)
-  const [last_touch, setLastTouch, getLastTouch] = useAsyncState(0)
-  const [last_touch_date, setLastTouchDate, getLastTouchDate] = useAsyncState(Date.now())
+  const [last_touch, setLastTouch] = useState<TouchEvent>({ y: 0, date: Date.now() })
 
-  const [momentum, setMomentum, getMomentum] = useAsyncState(0)
+  const [, setTouchStatus, getTouchStatus] = useAsyncState<TouchStatus>('inactive')
+  const [pos, setPos, getPos] = useAsyncState(initial_value ?? 0)
+  const [, setMomentum, getMomentum] = useAsyncState(0)
 
   const move = (y: number) => setPos(prev => limit(prev + y, 0, max))
+  const createTouchEvent = (pageY: number) => ({ y: pageY / view_height, date: Date.now() })
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -28,8 +27,11 @@ const NumberPicker = ({ initial_value, max = 60 }: NumberPickerProps) => {
         move(getMomentum() * refresh_interval)
         setMomentum(prev => {
           const x = prev - deceleration * Math.sign(prev)
-          if (Math.sign(prev) != Math.sign(x))
+          if (Math.sign(prev) != Math.sign(x)) {
+            setTouchStatus('inactive')
+            onValueSettled?.(Math.round(getPos()))
             return 0
+          }
           else return x
         })
       }
@@ -38,66 +40,56 @@ const NumberPicker = ({ initial_value, max = 60 }: NumberPickerProps) => {
     return () => clearInterval(interval)
   }, [])
 
-  const pos_mod = Math.round(pos % 3)
-  const pos_cycle = Math.trunc(pos / 3)
-
   const container_props: ViewProps = {
-    onLayout: (e) => {
-      setViewHeight(e.nativeEvent.layout.height)
+    onLayout: ({ nativeEvent: { layout }}) => {
+      setViewHeight(layout.height)
     },
     onStartShouldSetResponder: () => true,
-    onResponderGrant: ({ nativeEvent }) => {
-      DEBUG.log('touch start', 'touch')
-      setLastTouch(nativeEvent.pageY)
-      setLastTouchDate(Date.now())
+    onResponderGrant: ({ nativeEvent: { pageY } }) => {
+      setLastTouch(createTouchEvent(pageY))
       setTouchStatus('active')
     },
-    onResponderMove: ({ nativeEvent: { pageY }}: GestureResponderEvent) => {
-      const date = Date.now()
-      const pos_delta = (last_touch - pageY) / view_height
-      const time_delta = Date.now() - last_touch_date
+    onResponderMove: ({ nativeEvent: { pageY }}) => {
+      const new_touch = createTouchEvent(pageY)
+      const pos_delta = last_touch.y - new_touch.y
+      const time_delta = new_touch.date - last_touch.date
 
       move(pos_delta)
-
       setMomentum(pos_delta / time_delta)
-
-      setLastTouch(pageY)
-      setLastTouchDate(date)
+      setLastTouch(new_touch)
     },
-    onResponderRelease: ({ nativeEvent: { pageY }}: GestureResponderEvent) => {
+    onResponderRelease: () => {
       setTouchStatus('release')
-      DEBUG.log(`momentum: ${momentum}`)
     }
   }
 
-  const text_items = [
-    { offset: 0, value: 0 },
-    { offset: 50 , value: 1 },
-    { offset: 100, value: 2 },
-  ].map((x, i) => {
+  const text_items = new Array(3).fill(undefined).map((x, i) => {
     const magic = Math.trunc((Math.round(pos) + 1.5 - i) / 3)
-    const offset = (i * 50) - (pos * 50) + (magic * 150)
+    const value = i + magic * 3
 
-    const debug = `${magic}|${Math.trunc(offset)}`
-
-    return { offset, value: i + magic * 3, debug }
+    return <SlaveText {...{
+      offset: (i * 50) - (pos * 50) + (magic * 150),
+      value,
+      diff: 1 - Math.abs(pos - value),
+      hidden: value > max,
+      key: i,
+    }} />
   })
 
   return (
-    <View style={{overflow: 'hidden' }} {...container_props}>
+    <View style={{overflow: 'hidden'}} {...container_props}>
       <AppText size='m' style={{ opacity: 0 }}>00</AppText>
-      {text_items.map((x, i) =>
-        <SlaveText
-          offset={x.offset}
-          debug={x.debug}
-          key={i}
-          opacity={x.value > max ? 0 : 1}
-        >
-          {addLeadingZero(x.value)}
-        </SlaveText>
-      )}
+      {text_items}
+      {/* <Text style={{position: 'absolute', left: '50%'}}>{pos.toFixed(1)}</Text> */}
     </View>
   )
+}
+
+const debug_style: ViewStyle = {
+  overflow: 'visible',
+  borderWidth: 1,
+  borderColor: 'black',
+  borderStyle: 'dashed',
 }
 
 export default NumberPicker
