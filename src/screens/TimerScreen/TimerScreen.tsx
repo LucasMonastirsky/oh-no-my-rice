@@ -15,7 +15,7 @@ const TimerScreen = () => {
   const [timers, setTimers] = useState(mockInitialTimers)
 
   const addTimer = (timer: Timer) => {
-    setTimers(x => [...x, {...timer, duration: 10000}])
+    setTimers(x => [...x, {...timer}])
     setAdding(false)
   }
 

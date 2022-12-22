@@ -9,6 +9,7 @@ import { Overlay } from 'react-native-elements'
 type AddTimerProps = { active: boolean, addTimer: (timer: Timer) => any, onCancel: () => any }
 export default ({ active, addTimer, onCancel }: AddTimerProps) => {
   const [name, setName] = useState('')
+  const [duration, setDuration] = useState(0)
 
   useEffect(() => {
     BackHandler.addEventListener('hardwareBackPress', () => {
@@ -18,10 +19,10 @@ export default ({ active, addTimer, onCancel }: AddTimerProps) => {
   }, [])
 
   const onConfirm = () => {
-    if (name.length < 1) {
+    if (name.length < 1 || duration < 1) {
       console.log('bad!')
     }
-    else addTimer({ name, duration: 10000 })
+    else addTimer({ name, duration: duration * 1000 })
   }
 
   return (
@@ -33,7 +34,7 @@ export default ({ active, addTimer, onCancel }: AddTimerProps) => {
         autoFocus
         placeholder="Timer Name"
       />
-      <DurationPicker />
+      <DurationPicker onValueSettled={setDuration} />
       <HorizontalView>
         <Spacer />
         <AppButton title="Create" onPress={onConfirm} />
