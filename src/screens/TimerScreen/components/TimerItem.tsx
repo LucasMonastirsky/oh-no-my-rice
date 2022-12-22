@@ -6,9 +6,8 @@ import { timeToString } from '@src/utils/helpers'
 import { Timer } from '@src/types'
 
 type TimerStatus = 'active' | 'paused' | 'done'
-type TimerProps = { timer: Timer, onPressRemove: (name: string) => any } 
-
-const TimerItem = ({ timer: { name, duration }, onPressRemove }: TimerProps) => {
+type TimerProps = { timer: Timer, onPressRemove: (name: string) => any, onDone: () => any } 
+const TimerItem = ({ timer: { name, duration }, onPressRemove, onDone }: TimerProps) => {
   const [end_time, setEndTime] = useState<number>()
   const [elapsed_time, setElapsedTime] = useState(0)
   const [, tick] = useReducer(x => ++x, 0)
@@ -21,6 +20,10 @@ const TimerItem = ({ timer: { name, duration }, onPressRemove }: TimerProps) => 
 
     return () => clearInterval(interval)
   }, [])
+
+  useEffect(() => {
+    if (status === 'done') onDone()
+  }, [status])
 
   const onPressStart = () => {
     setEndTime(Date.now() + duration - elapsed_time)
