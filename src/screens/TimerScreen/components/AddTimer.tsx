@@ -1,15 +1,16 @@
 import { HorizontalView, Spacer } from '@src/components'
 import AppButton from '@src/components/AppButton'
-import DurationPicker from '@src/components/DurationPicker/DurationPicker'
 import { Timer } from '@src/types'
+import { TimerEditor } from './components'
+
 import { useEffect, useState } from 'react'
-import { BackHandler, StyleSheet, Text, TextInput, View } from 'react-native'
+import { BackHandler } from 'react-native'
 import { Overlay } from 'react-native-elements'
 
 type AddTimerProps = { active: boolean, addTimer: (timer: Timer) => any, onCancel: () => any }
 export default ({ active, addTimer, onCancel }: AddTimerProps) => {
-  const [name, setName] = useState('')
-  const [duration, setDuration] = useState(0)
+  const [timer, setTimer] = useState<Timer>({ name: '', duration: 0 })
+  const { name, duration } = timer
 
   useEffect(() => {
     BackHandler.addEventListener('hardwareBackPress', () => {
@@ -25,16 +26,13 @@ export default ({ active, addTimer, onCancel }: AddTimerProps) => {
     else addTimer({ name, duration: duration * 1000 })
   }
 
+  const changeTimer = (changes: Partial<Timer>) => {
+    setTimer(prev => ({...prev, ...changes}))
+  }
+
   return (
     <Overlay isVisible={active} onBackdropPress={onCancel}>
-      <TextInput
-        style={css.name_input}
-        onChangeText={setName}
-        value={name}
-        autoFocus
-        placeholder="Timer Name"
-      />
-      <DurationPicker onValueSettled={setDuration} />
+      <TimerEditor timer={timer} onChange={changeTimer} />
       <HorizontalView>
         <Spacer />
         <AppButton title="Create" onPress={onConfirm} />
@@ -42,9 +40,3 @@ export default ({ active, addTimer, onCancel }: AddTimerProps) => {
     </Overlay>
   )
 }
-
-const css = StyleSheet.create({
-  name_input: {
-    width: 250,
-  },
-})

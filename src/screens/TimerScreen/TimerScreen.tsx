@@ -33,8 +33,8 @@ const TimerScreen = () => {
   const onPressAdd = () => { setAdding(true) }
 
   return (
-    <View style={css.container}>
-      {timers.map(x => <TimerItem timer={x} onPressRemove={removeTimer} onDone={onTimerDone} />)}
+    <View style={css.container}> 
+      {timers.map(x => <TimerItem timer={x} key={x.name} onPressRemove={removeTimer} onDone={onTimerDone} />)}
       <FloatingButton onPress={onPressAdd} />
       <AddTimer active={adding} {...{addTimer}} onCancel={() => setAdding(false)} />
     </View>
