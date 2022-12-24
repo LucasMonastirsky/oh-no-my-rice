@@ -42,6 +42,10 @@ const TimerItem = ({ timer, onPressRemove, onDone }: TimerProps) => {
     setElapsedTime(0)
   }
 
+  const onPressSkip = () => {
+    setEndTime(Date.now() + 1)
+  }
+
   const onPressNext = () => {
     console.log('ding!!', timer.next_timer)
   }
@@ -54,7 +58,10 @@ const TimerItem = ({ timer, onPressRemove, onDone }: TimerProps) => {
       <Spacer />
       <AppText>{timeToString(remaining_time)}</AppText>
       <AppIcon onPress={() => onPressRemove(timer.name)} color='red' />
-      <AppIcon onPress={onPressReset} color='blue' />
+      {status === 'done'
+        ? <AppIcon onPress={onPressReset} color='blue' />
+        : <AppIcon onPress={onPressSkip} color='orange' />
+      }
       {status === 'active' && <AppIcon onPress={onPressPause} color='yellow' />}
       {status === 'paused' && <AppIcon onPress={onPressStart} color='green' />}
       {status === 'done' && timer.next_timer && <AppIcon onPress={onPressNext} color='pink' />}
