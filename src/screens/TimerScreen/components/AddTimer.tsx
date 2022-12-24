@@ -3,14 +3,13 @@ import AppButton from '@src/components/AppButton'
 import { Timer } from '@src/types'
 import { TimerEditor } from './components'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { BackHandler } from 'react-native'
 import { Overlay } from 'react-native-elements'
 
 type AddTimerProps = { active: boolean, addTimer: (timer: Timer) => any, onCancel: () => any }
 export default ({ active, addTimer, onCancel }: AddTimerProps) => {
-  const [timer, setTimer] = useState<Timer>({ name: '', duration: 0 })
-  const { name, duration } = timer
+  const [timers, setTimers] = useState<Timer[]>([{ name: '', duration: 0 }])
 
   useEffect(() => {
     BackHandler.addEventListener('hardwareBackPress', () => {
@@ -20,21 +19,31 @@ export default ({ active, addTimer, onCancel }: AddTimerProps) => {
   }, [])
 
   const onConfirm = () => {
-    if (name.length < 1 || duration < 1) {
-      console.log('bad!')
-    }
-    else addTimer({ name, duration: duration * 1000 })
+    // if (name.length < 1 || duration < 1) {
+    //   console.log('bad!')
+    // }
+    // else addTimer({ name, duration: duration * 1000 })
+    addTimer(timers.reduce((prev, curr) => ({ ...prev, next_timer: curr })))
   }
 
-  const changeTimer = (changes: Partial<Timer>) => {
-    setTimer(prev => ({...prev, ...changes}))
+  const changeTimer = (index: number, changes: Partial<Timer>) => {
+    setTimers(prev => prev.map((x, i) => i === index ? {...x, ...changes} : x))
   }
+
+  const chainTimer = () => {
+    setTimers(prev => [...prev, { name: '', duration: 0 }])
+  }
+
+  const editors = useMemo(() =>
+    timers.map((x, i) => <TimerEditor onChange={changes => changeTimer(i, changes)} />)
+  , [timers.length])
 
   return (
     <Overlay isVisible={active} onBackdropPress={onCancel}>
-      <TimerEditor timer={timer} onChange={changeTimer} />
+      {editors}
       <HorizontalView>
         <Spacer />
+        <AppButton title='Chain' onPress={chainTimer} />
         <AppButton title="Create" onPress={onConfirm} />
       </HorizontalView>
     </Overlay>

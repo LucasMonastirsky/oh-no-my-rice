@@ -42,6 +42,10 @@ const TimerItem = ({ timer, onPressRemove, onDone }: TimerProps) => {
     setElapsedTime(0)
   }
 
+  const onPressNext = () => {
+    console.log('ding!!', timer.next_timer)
+  }
+
   const remaining_time = status === 'done' ? 0 : end_time ? end_time - Date.now() : timer.duration - elapsed_time
 
   return (
@@ -53,6 +57,7 @@ const TimerItem = ({ timer, onPressRemove, onDone }: TimerProps) => {
       <AppIcon onPress={onPressReset} color='blue' />
       {status === 'active' && <AppIcon onPress={onPressPause} color='yellow' />}
       {status === 'paused' && <AppIcon onPress={onPressStart} color='green' />}
+      {status === 'done' && timer.next_timer && <AppIcon onPress={onPressNext} color='pink' />}
     </HorizontalView>
   )
 }
