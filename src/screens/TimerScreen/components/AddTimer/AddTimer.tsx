@@ -19,7 +19,7 @@ export default ({ active, addTimer, onCancel }: AddTimerProps) => {
   }, [])
 
   const onConfirm = () => {
-    addTimer(timers.reduce((prev, curr) => ({ ...prev, next_timer: curr })))
+    addTimer(timers.reduce((prev, curr) => ({ ...prev, duration: prev.duration * 1000, next_timer: curr })))
   }
 
   const changeTimer = (index: number, changes: Partial<Timer>) => {
