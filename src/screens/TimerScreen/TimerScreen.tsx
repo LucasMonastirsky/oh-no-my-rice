@@ -44,14 +44,14 @@ const TimerScreen = () => {
   }
 
   const addTimer = (timer: Timer) => {
-    const new_recipes = recipes
     recipes[selected_recipe_index].timers = [...current_recipe.timers, timer]
-    setRecipes(new_recipes)
+    setRecipes([...recipes])
     setAdding(false)
   }
 
   const removeTimer = (name: string) => {
-    // setTimers(list => list.filter(x => x.name !== name))
+    recipes[selected_recipe_index].timers = current_recipe.timers.filter(x => x.name !== name)
+    setRecipes([...recipes])
   }
   const onPressAdd = () => { setAdding(true) }
 
