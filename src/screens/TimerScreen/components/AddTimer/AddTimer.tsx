@@ -19,10 +19,6 @@ export default ({ active, addTimer, onCancel }: AddTimerProps) => {
   }, [])
 
   const onConfirm = () => {
-    // if (name.length < 1 || duration < 1) {
-    //   console.log('bad!')
-    // }
-    // else addTimer({ name, duration: duration * 1000 })
     addTimer(timers.reduce((prev, curr) => ({ ...prev, next_timer: curr })))
   }
 
