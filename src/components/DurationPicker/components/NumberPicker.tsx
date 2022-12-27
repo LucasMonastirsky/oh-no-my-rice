@@ -16,13 +16,18 @@ const NumberPicker = ({ initial_value, onValueSettled, max = 60 }: NumberPickerP
   const [view_height, setViewHeight] = useState(0)
   const [last_touch, setLastTouch] = useState<TouchEvent>({ y: 0, date: Date.now() })
 
-  const [, setTouchStatus, getTouchStatus] = useAsyncState<TouchStatus>('inactive')
+  const [touch_status, setTouchStatus, getTouchStatus] = useAsyncState<TouchStatus>('inactive')
   const [pos, setPos, getPos] = useAsyncState(initial_value ?? 0)
   const [, setMomentum, getMomentum] = useAsyncState(0)
   const [, setSnapTarget, getSnapTarget] = useAsyncState(0)
 
   const move = (y: number) => setPos(prev => limit(prev + y, 0, max))
   const createTouchEvent = (pageY: number) => ({ y: pageY / view_height, date: Date.now() })
+
+  useEffect(() => {
+    if (touch_status === 'inactive')
+      onValueSettled?.(getSnapTarget())
+  }, [touch_status])
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -43,7 +48,6 @@ const NumberPicker = ({ initial_value, onValueSettled, max = 60 }: NumberPickerP
           const mid = (prev + getSnapTarget()) / 2
           if (Math.abs(prev - mid) < snap_end_threshold) {
             setTouchStatus('inactive')
-            onValueSettled?.(getSnapTarget())
             return getSnapTarget()
           }
           else return mid
