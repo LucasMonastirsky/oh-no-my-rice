@@ -60,7 +60,7 @@ const TimerScreen = () => {
       <TopBar {...{recipes, onRecipeSelected}} />
       {recipes[selected_recipe_index].timers.map(x => <TimerItem parent_timer={x} key={x.name} onPressRemove={removeTimer} onDone={onTimerDone} />)}
       <FloatingButton onPress={onPressAdd} />
-      <AddTimer active={adding} {...{addTimer}} onCancel={() => setAdding(false)} />
+      {adding && <AddTimer active={adding} {...{addTimer}} onCancel={() => setAdding(false)} />}
     </View>
   )
 }

@@ -12,10 +12,12 @@ export default ({ active, addTimer, onCancel }: AddTimerProps) => {
   const [timers, setTimers] = useState<Timer[]>([{ name: '', duration: 0 }])
 
   useEffect(() => {
-    BackHandler.addEventListener('hardwareBackPress', () => {
+    const remover = BackHandler.addEventListener('hardwareBackPress', () => {
       onCancel()
-      return false
+      return true
     })
+
+    return remover.remove
   }, [])
 
   const onConfirm = () => {
