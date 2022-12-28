@@ -1,4 +1,4 @@
 import AddTimer from './AddTimer'
-import TimerItem from './TimerItem'
+import TimerList from './TimerList'
 
-export { AddTimer, TimerItem }
+export { AddTimer, TimerList }

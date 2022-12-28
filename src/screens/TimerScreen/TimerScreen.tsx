@@ -1,11 +1,12 @@
 import FloatingButton from '@src/components/FloatingButton'
 import { Recipe, Timer } from '@src/types'
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { StyleSheet, View } from 'react-native'
-import { AddTimer, TimerItem } from './components'
+import { AddTimer, TimerList } from './components'
 
 import Sound from 'react-native-sound' // TODO: add iOS sounds
 import TopBar from './components/TopBar'
+import { TimerListRef } from './components/TimerList/TimerList'
 
 Sound.setCategory('Alarm')
 const test_sound = new Sound('timer_off.mp3', Sound.MAIN_BUNDLE, (error) => {
@@ -34,6 +35,8 @@ const TimerScreen = () => {
 
   const current_recipe = recipes[selected_recipe_index]
 
+  const timer_list_ref = useRef<TimerListRef>()
+
   const onRecipeSelected = (index: number) => {
     console.log('selected recipe', recipes[index].name)
     setSelectedRecipeIndex(index)
@@ -49,16 +52,21 @@ const TimerScreen = () => {
     setAdding(false)
   }
 
-  const removeTimer = (name: string) => {
-    recipes[selected_recipe_index].timers = current_recipe.timers.filter(x => x.name !== name)
+  const removeTimer = (index: number) => {
+    recipes[selected_recipe_index].timers = current_recipe.timers.filter((x, i) => i !== index)
     setRecipes([...recipes])
   }
   const onPressAdd = () => { setAdding(true) }
 
+  const resetTimers = () => {
+    console.log('reset timers')
+    timer_list_ref.current?.reset()
+  }
+
   return (
     <View style={css.container}> 
-      <TopBar {...{recipes, onRecipeSelected}} />
-      {recipes[selected_recipe_index].timers.map(x => <TimerItem parent_timer={x} key={x.name} onPressRemove={removeTimer} onDone={onTimerDone} />)}
+      <TopBar {...{recipes, onRecipeSelected, resetTimers}} />
+      <TimerList timers={current_recipe.timers} {...{removeTimer, onTimerDone}} ref={timer_list_ref} />
       <FloatingButton onPress={onPressAdd} />
       {adding && <AddTimer active={adding} {...{addTimer}} onCancel={() => setAdding(false)} />}
     </View>

@@ -4,13 +4,17 @@ import { useAsyncState } from "@src/utils/helpers"
 import { useEffect, useReducer } from "react"
 import { BackHandler, TouchableOpacity, View } from "react-native"
 
-type TopBarProps = { recipes: Recipe[], onRecipeSelected: (index: number) => any }
-const TopBar = ({ recipes, onRecipeSelected }: TopBarProps) => {
+type TopBarProps = { recipes: Recipe[], onRecipeSelected: (index: number) => any, resetTimers: () => any, }
+const TopBar = ({ recipes, onRecipeSelected, resetTimers }: TopBarProps) => {
   const [open, setOpen, getOpen] = useAsyncState(false)
   
   const onRecipePressed = (index: number) => {
     onRecipeSelected(index)
     setOpen(false)
+  }
+
+  const onResetPressed = () => {
+    resetTimers()
   }
 
   useEffect(() => {
@@ -35,7 +39,7 @@ const TopBar = ({ recipes, onRecipeSelected }: TopBarProps) => {
         {!open && <TouchableOpacity onPress={() => setOpen(true)}><AppText>Closed!</AppText></TouchableOpacity>}
       </View>
       <Spacer />
-      <AppIcon color='blue' />
+      <AppIcon color='blue' onPress={onResetPressed} />
     </HorizontalView>
   )
 }
